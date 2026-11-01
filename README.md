@@ -73,3 +73,7 @@ Ports:['CASIO USB-MIDI 0', 'Arturia KeyStep 32 0', etc]
 Start listening to port: CASIO USB-MIDI 0
 ```
   On line 97 of the `piano_keybinds.py` script there is a function `md.open_input()`. Try inserting different ports from the list in the brackets of the function. Most likely the script is just listening to the wrong port.
+
+
+## CUSTOMIZATION
+The guide for basic customization is [here](https://github.com/TreeOIII/note2key/blob/main/CUSTOMIZATION.md)
