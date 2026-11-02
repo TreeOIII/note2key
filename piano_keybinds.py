@@ -93,6 +93,8 @@ def dispatch(msg):
 
 
 def main():
+    ms.echo("note2key by TreeOIII(or kebok), licensed under CC BY-NC 4.0,")
+    ms.echo("link to github: (https://github.com/TreeOIII/note2key/tree/main)")
     ms.echo("Ports:", md.get_input_names())
 
     with md.open_input() as port:
