@@ -1,6 +1,10 @@
 # note2key
 Now you can play Minecraft with a MIDI keyboard!
 
+note2key by TreeOIII(or kebok), licensed under CC BY-NC 4.0,
+
+link to github: (https://github.com/TreeOIII/note2key/tree/main)
+
 ## Requirements
 - Minecraft 26.3 Fabric
 - [Minescript 5.0+](https://modrinth.com/mod/minescript)
