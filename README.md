@@ -77,3 +77,10 @@ Start listening to port: CASIO USB-MIDI 0
 
 ## CUSTOMIZATION
 The guide for basic customization is [here](https://github.com/TreeOIII/note2key/blob/main/CUSTOMIZATION.md)
+
+
+## LICENSE
+This project is licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).
+You may use and modify it for non-commercial purposes, with attribution to the author.
+See the [LICENSE](https://github.com/TreeOIII/note2key/blob/main/LICENSE) file for the full text.
+
