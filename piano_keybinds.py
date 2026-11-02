@@ -1,4 +1,6 @@
 # piano_keybinds.py
+# note2key by TreeOIII(or kebok), licensed under CC BY-NC 4.0,
+# link to github: (https://github.com/TreeOIII/note2key/tree/main)
 
 import mido as md
 import minescript as ms
