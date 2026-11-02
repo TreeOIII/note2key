@@ -1,3 +1,7 @@
+
+note2key by TreeOIII(or kebok), licensed under CC BY-NC 4.0,
+link to github: (https://github.com/TreeOIII/note2key/tree/main)
+
 ### Basic Customization of Config
 
 > **Note**: Because the config and the shell of mido are written in Python, you can have endless customization. Only the basic customization that I made for ease of use is described here.
