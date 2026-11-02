@@ -5,6 +5,8 @@ note2key by TreeOIII(or kebok), licensed under CC BY-NC 4.0,
 
 link to github: (https://github.com/TreeOIII/note2key/tree/main)
 
+![Demo video](https://img.youtube.com/vi/msUZVQgP1Pg/maxresdefault.jpg)(https://youtu.be/msUZVQgP1Pg)
+
 ## Requirements
 - Minecraft 26.3 Fabric
 - [Minescript 5.0+](https://modrinth.com/mod/minescript)
