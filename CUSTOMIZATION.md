@@ -1,7 +1,7 @@
 ### Basic Customization of Config
-```
-Note: Because the config and the shell of mido are written in Python, you can have endless customization. Only the basic customization that I made for ease of use is described here.
-```
+
+> **Note**: Because the config and the shell of mido are written in Python, you can have endless customization. Only the basic customization that I made for ease of use is described here.
+
 
 To edit keybinds you need to edit the list `bindings: list[nb]` in the `piano_keybinds` file. There you can add two types of binds:
 - Single note
@@ -16,18 +16,18 @@ the second bind (B3 + C3 = ATTACK) will take priority.
 
 What does that mean?
 When you are pressing B3 + C3, only the second bind (B3 + C3 = ATTACK) will be triggered.
-```
-NOTE: if you press C3 first, and then press B3, both binds will be triggered. But if you press B3 first, and then C3, only the bind (B3 + C3 = ATTACK) will be triggered.
-```
+
+> **Note**: if you press C3 first, and then press B3, both binds will be triggered. But if you press B3 first, and then C3, only the bind (B3 + C3 = ATTACK) will be triggered.
+
 Let's talk about Single note binds first. To make a single note bind you need to add `nb()` to the list `bindings: list[nb]`. `nb()` has three options:
 - **note=** `<int>`
 - **on_press=** `<func>`
 - **on_release=** `<func>`
 
 **note=** is the note number. You can use the note C4 as a reference: it is number 60. After `=` you need to put the note number.
-```
-Note: On some keyboards note 60 is C3.
-```
+
+> **Note**: On some keyboards note 60 is C3.
+
 **on_press=** Here you put the function that the note triggers on press.
 
 **on_release=** Here you put the function that the note triggers on release.
@@ -40,6 +40,10 @@ on_press=do(ms.player_press_forward, True)
 ```
 
 If we didn't have that function, we would need to write `lambda b:` at the start of each function that we want to call.
+
+
+> **Note**: the `do()` function does not pass the `b` object to your function. The `b` object stores most of the information about the note. More about it later.
+
 
 So your bind will look something like this:
 ```
@@ -75,24 +79,21 @@ cb(notes=(71, 47), on_press=do(ms.player_inventory_select_slot, 0))
 ```
 This bind says that when we press the notes `71 (B4), 47 (B2)`, we will trigger the function `ms.player_inventory_select_slot` (select slot `<slot_number>`) with the option `0` (select slot **0**).
 
-```
-Note: In the bind you need to have note=/notes= and at least one of those options: on_press=, on_release=
-```
-
+> **Note**: In the bind you need to have `note=`/`notes=` and at least one of those options: `on_press=`, `on_release=`.
 
 When making your own binds, you will sometimes need to call several functions from one bind, or even a bunch of code that you wrote yourself. To do that, simply make a function before the ``bindings: list[nb]`` list that will call the functions or code that you want.
 
 So your bind with a custom function will look something like this:
 ```
-def <your function 1>():
+def <your_function_name_1>():
   <code>
 
-def <your function 2>():
+def <your_function_name_2>():
   <code>
 
 bindings: list[nb] = [
   ...
-  nb(note=<note>, on_press=do(<your function 1>, <options>), on_release=do(<your function 2>, <options>)),
+  nb(note=<note>, on_press=do(<your_function_name_1>, <options>), on_release=do(<your_function_name_2>, <options>)),
   ...
 ]
 ```
@@ -112,12 +113,62 @@ bindings: list[nb] = [
 ```
 Pressing 55 (G3) starts sprinting forward, and releasing it stops.
 
-### Little analysis of code in the piano_keybinds.py file
-```
-Note №1: This section was made to help you quickly understand the code in the `piano_keybinds.py` file.
+### Information about notes that you can use (`b` object)
+When a bind is triggered (on press or on release), `note_binding.py` passes the bind object `b`
+to your function. You can read information about the note from it.
 
-Note №2: You don't have to follow all the sections, etc. They were made to make the code easier to understand. Once you understand the code, you can change the 'piano_keybinds.py' file however you want.
+> **Note**: Each type of bind transfers different information.
+
+**nb()**
+
+| Information      | How to read it       | Notes                                        |
+|------------------|----------------------| ---------------------------------------------|
+| note             | `b.note`             | note number                                  |
+| channel          | `b.channel`          | `None` if any channel                        |
+| is_pressed       | `b.is_pressed`       | `True` on press, `False` on release          |
+| velocity         | `b.velocity`         | how hard the note was pressed (1-127)        |
+| release_velocity | `b.release_velocity` | always 0 on press                            |
+| pressed_at       | `b.pressed_at`       | time of the press (`time.monotonic()`)       |
+| held_time        | `b.held_time`        | seconds the note was held (about 0 on press) |
+
+**cb()**
+
+| Information      | How to read it     | Notes                                        |
+|------------------|--------------------|----------------------------------------------|
+| notes            | `sorted(b.notes)`  | all notes of the chord                       |
+| held             | `sorted(b.held)`   | notes of the chord held right now            |
+| channel          | `b.channel`        | `None` if any channel                        |
+| is_pressed       | `b.is_pressed`     | `True` when the chord is complete            |
+| pressed_at       | `b.pressed_at`     | time when the chord became complete          |
+| held_time        | `b.held_time`      | seconds the chord was held                   |
+
+To get this information, your function must have the parameter `b`:
 ```
+def <your_function_name>(b):
+  <code>
+```
+Analysis of the bind example:
+```
+def show_note(b):
+    ms.echo(f"note={b.note} velocity={b.velocity} held={b.held_time:.2f}s")
+
+bindings: list[nb] = [
+    nb(note=50, on_press=show_note, on_release=show_note),
+]
+```
+When you press and release note 50 (D3), a message with the note number, the velocity and
+the time it was held appears in the chat. Here `:.2f` is an f-string option that rounds
+the time to two decimal places.
+
+> **Important**: pass such a function directly to `on_press=` / `on_release=`, **without** `do()`.
+> `do()` doesn't pass `b` to the function.
+
+### Little analysis of code in the piano_keybinds.py file
+
+> **Note №1**: This section was made to help you quickly understand the code in the `piano_keybinds.py` file.
+>
+> **Note №2**: You don't have to follow all the sections, etc. They were made to make the code easier to understand. Once you understand the code, you can change the `piano_keybinds.py` file however you want.
+
 Here we will briefly analyze the file `piano_keybinds.py`. You can analyze the file `note_binding.py` yourself. You will need to change the code in `note_binding.py` only when you want to heavily customize the script.
 The file `piano_keybinds.py` is divided into 4 sections:
 - libraries import
@@ -175,7 +226,7 @@ We multiply `yaw_speed * 4` by `dt` (or Δtime, read as "delta time") to ensure 
 
 You can write your own functions with **Pyjinn** in the Python file, as we saw in the `piano_keybinds.py` file:
 ```
-<name of your function> = java.eval_pyjinn_script("""
+<your_function_name> = java.eval_pyjinn_script("""
 ...
 ...
 """)
