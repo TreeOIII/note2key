@@ -1,3 +1,4 @@
+# piano_keybinds.py
 
 import mido as md
 import minescript as ms
@@ -6,10 +7,9 @@ from note_binding import ChordBinding as cb
 
 import java
 
-# --- список функций ---
+# --- custom functions ---
 
 def do(fn, *args):
-    """Колбэк, который вызывает fn(*args) и игнорирует биндинг."""
     return lambda b: fn(*args)
 
 pyj_camera_rotate = java.eval_pyjinn_script("""
@@ -47,7 +47,7 @@ def rotate_stop(b: nb):
     pyj_camera_rotate.set("yaw_speed", 0.0)
     pyj_camera_rotate.set("pitch_speed", 0.0)
 
-# --- список биндов ---
+# --- list of binds ---
 bindings: list[nb] = [
     nb(note=50, on_press=do(ms.player_press_forward, True), on_release=do(ms.player_press_forward, False)), #ms.player_press_forward
     nb(note=49, on_press=do(ms.player_press_left, True), on_release=do(ms.player_press_left, False)), #ms.player_press_left
@@ -73,7 +73,7 @@ bindings: list[nb] = [
     cb(notes=(71, 69), on_press=do(ms.player_inventory_select_slot, 8)),
 ]
 
-# --- цикл ---
+# --- loop ---
 chords = [b for b in bindings if isinstance(b, cb)]
 singles = [b for b in bindings if not isinstance(b, cb)]
 
@@ -82,7 +82,6 @@ def dispatch(msg):
     for c in chords:
         c.handle(msg)
 
-    # ноту аккорда одиночным биндам не отдаём
     if msg.type == "note_on" and msg.velocity > 0:
         if any(c.is_pressed and msg.note in c.notes for c in chords):
             return
@@ -92,10 +91,10 @@ def dispatch(msg):
 
 
 def main():
-    ms.echo("Порты:", md.get_input_names())
+    ms.echo("Ports:", md.get_input_names())
 
     with md.open_input() as port:
-        ms.echo(f"Прослушивается порт \"{port.name}\", поставьте правильный порт в md.open_input(<правильный порт>) если прослушивается не тот порт")
+        ms.echo(f"Start listening to port: \"{port.name}\"")
         try:
             for msg in port:
                 dispatch(msg)
